@@ -3,7 +3,6 @@ package ru.akirakozov.sd.refactoring.servlet;
 import ru.akirakozov.sd.refactoring.databases.DatabaseQuery;
 import ru.akirakozov.sd.refactoring.utils.QueryOutput;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -11,9 +10,9 @@ import java.io.IOException;
 /**
  * @author akirakozov
  */
-public class QueryServlet extends HttpServlet {
+public class QueryServlet extends AbstractServlet {
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         String command = request.getParameter("command");
 
         if ("max".equals(command))
@@ -24,9 +23,12 @@ public class QueryServlet extends HttpServlet {
           QueryOutput.formatResponse(response, DatabaseQuery.dbQuery("SELECT SUM(price) FROM PRODUCT", true, false), "Summary price: \r\n");
         else if ("count".equals(command))
           QueryOutput.formatResponse(response, DatabaseQuery.dbQuery("SELECT COUNT(*) FROM PRODUCT", true, false), "Number of products: \r\n");
-        else response.getWriter().println("Unknown command: " + command);
-
-        response.setContentType("text/html");
-        response.setStatus(HttpServletResponse.SC_OK);
+        else {
+          try {
+            response.getWriter().println("Unknown command: " + command);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
     }
 }
