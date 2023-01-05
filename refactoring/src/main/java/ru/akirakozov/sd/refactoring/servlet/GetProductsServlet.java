@@ -1,5 +1,6 @@
 package ru.akirakozov.sd.refactoring.servlet;
 
+import ru.akirakozov.sd.refactoring.databases.DatabaseQuery;
 import ru.akirakozov.sd.refactoring.utils.QueryOutput;
 
 import javax.servlet.http.HttpServlet;
@@ -13,7 +14,7 @@ public class GetProductsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-        QueryOutput.formatResponse(response, "SELECT * FROM PRODUCT" , "", false);
+        QueryOutput.formatResponse(response, DatabaseQuery.dbQuery("SELECT * FROM PRODUCT", false, false), "");
 
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
