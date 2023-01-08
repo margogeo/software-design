@@ -1,0 +1,92 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<head>
+    <title>Todo list</title>
+</head>
+<body>
+
+<h3>Todo lists</h3>
+
+<table>
+    <th:block th:each="product : ${products}">
+    <tr>
+        <td th:text="${product}">
+        </td>
+    </tr>
+    </th:block>
+</table>
+
+<h4>Add a list</h4>
+<form method="POST" action="/add-product">
+    <table>
+        <tr>
+            <td><label>Name:</label></td>
+            <td><input type="text" th:name="name"/></td>
+        </tr>
+    </table>
+    <input type="submit" value="add">
+</form>
+
+<h4>Delete a list</h4>
+<form method="POST" action="/delete-product">
+  <table>
+    <tr>
+      <td><label>Name:</label></td>
+      <td><input type="text" th:name="name"/></td>
+    </tr>
+  </table>
+  <input type="submit" value="delete">
+</form>
+
+<h4>Open a list</h4>
+<form method="POST" action="/open-product">
+  <table>
+    <tr>
+      <td><label>Name:</label></td>
+      <td><input type="text" th:name="name"/></td>
+    </tr>
+  </table>
+  <input type="submit" value="open">
+</form>
+
+<div th:if="${currentList != null}">
+<h3 th:text="${currentList.getName()}" />
+<div>
+  <form method="POST" action="/add-point">
+    <div>
+      <input type="text" th:name="name">
+      <input type="submit" value="add">
+    </div>
+  </form>
+</div>
+<div>
+  <form method="POST" action="/delete-point">
+    <div>
+      <input type="text" th:name="name">
+      <input type="submit" value="delete">
+    </div>
+  </form>
+</div>
+<table>
+  <p>Tasks:</p>
+  <th:block th:each="task : ${currentList.getList()}">
+    <tr>
+      <td th:text="${task.getName()}"/>
+      <td th:unless="${task.finished}">
+        <form method="POST" action="/finish-point">
+          <input type="hidden" th:name="name" th:value="${task.getName()}">
+          <input type="submit" value="finish">
+        </form>
+      </td>
+      <td th:if="${task.finished}">
+        finished
+      </td>
+    </tr>
+  </th:block>
+
+</table>
+</div>
+
+
+</body>
+</html>
