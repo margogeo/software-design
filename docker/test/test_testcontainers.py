@@ -77,7 +77,7 @@ def test_3():
     assert requests.post(f'{CLIENT_URL}/users/', json={'cash': 1000}).ok
     assert requests.post(f'{CLIENT_URL}/users/', json={'cash': 2000}).ok
 
-    cur.execute('SELECT * FROM stock')
+    cur.execute('SELECT * FROM exchangeuser')
     rows = cur.fetchall()
     assert len(rows) == 2
     assert rows[0] == (1000.0, 1)
@@ -101,4 +101,4 @@ def test_4():
     cur.execute('SELECT * FROM asset')
     rows = cur.fetchall()
     assert len(rows) == 1
-    assert rows[0] == ('GOOG', 1, 1, 1)
+    assert rows[0] == ('GOOG', 2, 1, 1)
