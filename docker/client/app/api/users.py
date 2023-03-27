@@ -11,8 +11,8 @@ router = APIRouter()
 async def add_user(
     user_base: models.UserBase,
     db: Session = Depends(get_session)
-) -> models.User:
-    user = models.User.from_orm(user_base)
+) -> models.ExchangeUser:
+    user = models.ExchangeUser.from_orm(user_base)
 
     try:
         db.add(user)
@@ -29,11 +29,11 @@ async def deposit_money(
     user_id: int,
     deposit: models.UserBase,
     db: Session = Depends(get_session)
-) -> models.User:
+) -> models.ExchangeUser:
     if deposit.cash < 0:
         raise HTTPException(status_code=400, detail='Can\'t withdraw money')
 
-    query = select(models.User).where(models.User.id == user_id)
+    query = select(models.ExchangeUser).where(models.ExchangeUser.id == user_id)
     try:
         user = db.exec(query).one()
     except:
@@ -55,8 +55,8 @@ async def deposit_money(
 async def get_portfolio(
     user_id: int,
     db: Session = Depends(get_session)
-) -> models.User:
-    query = select(models.User).where(models.User.id == user_id)
+) -> models.ExchangeUser:
+    query = select(models.ExchangeUser).where(models.ExchangeUser.id == user_id)
     try:
         return db.exec(query).one()
     except:

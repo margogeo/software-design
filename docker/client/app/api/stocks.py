@@ -24,7 +24,7 @@ async def buy_stocks(
     user_id: int,
     db: Session = Depends(get_session)
 ) -> Response:
-    query = select(models.User).where(models.User.id == user_id)
+    query = select(models.ExchangeUser).where(models.ExchangeUser.id == user_id)
     try:
         user = db.exec(query).one()
     except:
@@ -73,7 +73,7 @@ async def sell_stocks(
     user_id: int,
     db: Session = Depends(get_session)
 ) -> Response:
-    query = select(models.User).where(models.User.id == user_id)
+    query = select(models.ExchangeUser).where(models.ExchangeUser.id == user_id)
     try:
         user = db.exec(query).one()
     except:

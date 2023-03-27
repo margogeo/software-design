@@ -12,8 +12,8 @@ EXCHANGE_URL = 'http://127.0.0.1:8000'
 def get_db():
     conn = psycopg2.connect(
         database='db',
-        user='postgres',
-        password='postgres',
+        user='db',
+        password='db',
         host='127.0.0.1',
         port=5432
     )
@@ -22,14 +22,12 @@ def get_db():
 
 def setup():
     compose = testcontainers.compose.DockerCompose(COMPOSE_PATH)
+    compose.stop()
+    time.sleep(10)
     compose.start()
     time.sleep(10)
 
     return compose, get_db().cursor()
-
-
-def shutdown(compose):
-    compose.stop()
 
 
 def test_1():
@@ -48,9 +46,7 @@ def test_1():
     rows = cur.fetchall()
     assert len(rows) == 2
     assert rows[0] == ('Google', 1)
-    assert rows[0] == ('Apple', 2)
-
-    shutdown(comp)
+    assert rows[1] == ('Apple', 2)
 
 
 def test_2():
@@ -72,6 +68,37 @@ def test_2():
     rows = cur.fetchall()
     assert len(rows) == 2
     assert rows[0] == ('GOOG', 1, 105.1, 2000)
-    assert rows[0] == ('AAPL', 2, 180.2, 10000)
+    assert rows[1] == ('AAPL', 2, 180.2, 10000)
 
-    shutdown(comp)
+
+def test_3():
+    comp, cur = setup()
+
+    assert requests.post(f'{CLIENT_URL}/users/', json={'cash': 1000}).ok
+    assert requests.post(f'{CLIENT_URL}/users/', json={'cash': 2000}).ok
+
+    cur.execute('SELECT * FROM stock')
+    rows = cur.fetchall()
+    assert len(rows) == 2
+    assert rows[0] == (1000.0, 1)
+    assert rows[1] == (2000.0, 2)
+
+
+def test_4():
+    comp, cur = setup()
+
+    assert requests.post(
+        f'{EXCHANGE_URL}/companies/',
+        json={'name': 'Google'}
+    ).ok
+    assert requests.post(
+        f'{EXCHANGE_URL}/stocks/',
+        json={'ticker': 'GOOG', 'company_id': 1, 'price': 105.1, 'quantity': 2000}
+    ).ok
+    assert requests.post(f'{CLIENT_URL}/users/', json={'cash': 1000}).ok
+    assert requests.get(f'{CLIENT_URL}/stocks/buy/GOOG', params={'quantity': 2, 'user_id': 1}).ok    
+
+    cur.execute('SELECT * FROM asset')
+    rows = cur.fetchall()
+    assert len(rows) == 1
+    assert rows[0] == ('GOOG', 1, 1, 1)

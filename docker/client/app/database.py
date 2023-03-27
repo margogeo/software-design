@@ -3,10 +3,7 @@ from sqlmodel import SQLModel, Session, create_engine
 from . import config
 from . import models
 
-engine = create_engine(
-    config.DATABASE_URL,
-    connect_args={'check_same_thread': False}
-)
+engine = create_engine(config.DATABASE_URL)
 
 
 def create_db_and_tables():

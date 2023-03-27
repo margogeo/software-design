@@ -10,15 +10,15 @@ class AssetBase(SQLModel):
 
 class Asset(AssetBase, table=True):
     id: int = Field(default=None, primary_key=True)
-    owner_id: int = Field(foreign_key='user.id')
-    owner: 'User' = Relationship(back_populates='portfolio')
+    owner_id: int = Field(foreign_key='exchangeuser.id')
+    owner: 'ExchangeUser' = Relationship(back_populates='portfolio')
 
 
 class UserBase(SQLModel):
     cash: float = Field()
 
 
-class User(UserBase, table=True):
+class ExchangeUser(UserBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     portfolio: list[Asset] = Relationship(back_populates='owner')
 
